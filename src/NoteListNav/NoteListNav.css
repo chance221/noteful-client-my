@@ -3,6 +3,12 @@
   list-style-type: none;
   margin: 130px 0 0;
   padding: 0;
+  display:flex;
+  flex-direction:column
+}
+
+.NoteListNav__list_title{
+  width:100%
 }
 
 .NoteListNav__button-wrapper {
@@ -18,6 +24,14 @@
   color: white;
 }
 
+.folderContainer{
+display: block;
+height: 100px;
+background-color: #030f1f;
+
+
+margin-bottom: 2px;
+}
 .NoteListNav__folder-link {
   background-color: #030f1f;
   color: #b5b3b3;
@@ -25,7 +39,7 @@
   font-family: var(--custom-font);
   font-size: 20px;
   margin: 0 0 8px auto;
-  max-width: 180px;
+  width: 100%;
   padding: 8px 16px;
   text-decoration: none;
 }

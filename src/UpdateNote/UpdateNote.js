@@ -38,8 +38,8 @@ export default class UpdateNote extends React.Component{
       wholeNote:{
         name:"",
         content:"",
-        //id:"",
-        //modified:"",
+        id:"",
+        modified:"",
         folderId:"",
       }
     }
@@ -99,9 +99,9 @@ export default class UpdateNote extends React.Component{
   }
 
   updateServerNotes = note =>{
-    console.log(note)
+    
     const folderInt = Number(note.folderId)
-    fetch(`${config.API_ENDPOINT}/notes/${folderInt}`, {
+    fetch(`${config.API_ENDPOINT}/notes/${this.props.match.params.noteId}`, {
         method:'put',
         headers:{
             'content-type':'application/json',
@@ -111,24 +111,21 @@ export default class UpdateNote extends React.Component{
           
           content:note.content,
           
-          folderId:folderInt
+          folderId:folderInt,
+
+          modified: note.modified
         })
     })
     .then((folderRes)=>{
-      window.location.reload('/')
-      this.props.history.goBack()
-        // if (!folderRes.ok)
-        //   return folderRes.json().then(e=> Promise.reject(e))
-        // return folderRes.json()
+      
     })
     .then((folderRes1)=>{
         
-        this.props.history.goBack()
+    
     })
     .catch(e =>{
       alert('something went wrong')
-      console.log({e})  
-      console.error({e});
+      
     })
   };
 
@@ -138,18 +135,13 @@ export default class UpdateNote extends React.Component{
   };
   
 
-  // addID = (newID) =>{
-  //   newID = shotrid.generate()
-  //   return newID
-  // };
-  
   updateWholeNote (name, id, date, content, folderId){
     return this.setState({
       wholeNote:{
         name:name,
         content:content,
-        //id:id,
-        //modified:date,
+        id:id,
+        modified:date,
         folderId:parseInt(folderId, 10)
       }
     })
@@ -162,25 +154,12 @@ export default class UpdateNote extends React.Component{
       content: note.content
     })
   }
-  
-
-  // handleSelectedNote (folder, noteFolderId){
-  //   if(folder.id === noteFolderId){
-  //     return <option selected key={folder.id} value={folder.id}>
-  //     {folder.name}
-  //       </option>
-  //     }else{
-  //       return <option key={folder.id} value={folder.id}>
-  //       {folder.name}
-  //     </option>}
-  // }
 
   handleSubmit = e =>{
     e.preventDefault();
     
     const promise1 = new Promise((resolve, reject) =>{
-    //let modDate = this.getDateModified();
-    //let addedID = this.addID();
+    let modDate = this.getDateModified();
     let newName = this.state.noteName.value;
     let newContent = this.state.noteContent.value;
     let folderId  = this.state.folderId.value;
@@ -188,8 +167,10 @@ export default class UpdateNote extends React.Component{
     this.setState({
       wholeNote: ({ 
         name:newName,
+        id: this.props.match.params.noteId,
         folderId:parseInt(folderId, 10), 
-        content:newContent
+        content:newContent,
+        modified:modDate
         })
     })
     resolve();
@@ -198,7 +179,8 @@ export default class UpdateNote extends React.Component{
       alert('note updated')
       
       this.updateServerNotes(this.state.wholeNote)
-      this.context.handleNoteSubmit(this.state.wholeNote)
+      this.context.updateNote(this.state.wholeNote)
+      this.props.history.goBack();
     }) 
   };
 
@@ -238,7 +220,7 @@ export default class UpdateNote extends React.Component{
             <div className="form-group">
               <div className="note_name">
                 {this.state.folderId.touched && <ValidationError message={folderError}/>}
-                <select id='note-folder-select' name='note-folder-id'  onChange = {e=>this.updatefolderId(e.target.value)}>
+                <select id='note-folder-select' defaultValue={note.folderId} name='note-folder-id'  onChange = {e=>this.updatefolderId(e.target.value)}>
                 <option value={null}></option>
                 {folders.map(folder =>
                   handleSelectedNote(folder, noteFolder.id)

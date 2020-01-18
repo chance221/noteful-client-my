@@ -2,11 +2,12 @@ import React from 'react';
 import config from '../config';
 import ApiContext from '../ApiContext';
 import ValidationError from '../ValidationError';
-import './AddFolder.css';
+import '../UpdateFolder/UpdateFolder.css';
 
 
 
-export default class AddFolder extends React.Component{
+export default class UpdateFolder extends React.Component{
+
   constructor(props){
     super(props);
     this.state = {
@@ -19,7 +20,10 @@ export default class AddFolder extends React.Component{
   static defaultProps = {
     history:{
       goBack: () => { }
-    }  
+    },
+    match:{
+      params: {}
+    },
   }
 
   static contextType = ApiContext
@@ -31,16 +35,18 @@ export default class AddFolder extends React.Component{
   handleSubmit = (e) => {
       e.preventDefault();
       const name = this.state.name.value;
-      const { addFolder, handleFolderSubmit } = this.context;
+      const { updateFolder, addFolder } = this.context;
       const newFolder = addFolder(name);
-      handleFolderSubmit(newFolder)
+      newFolder.id = this.props.match.params.folderId;
+      updateFolder(newFolder)
       this.updateServerFolders(newFolder);
   }
 
   updateServerFolders = folder =>{
-      
-      fetch(`${config.API_ENDPOINT}/folders`, {
-          method:'post',
+    console.log('this is the folder when updating database', folder)
+      let folderId = parseInt(folder.id, 10) 
+      fetch(`${config.API_ENDPOINT}/folders/${folderId}`, {
+          method:'put',
           headers:{
               'content-type':'application/json',
           },
@@ -49,15 +55,13 @@ export default class AddFolder extends React.Component{
           })
       })
       .then((folderRes)=>{
-        
-          if (!folderRes.ok)
-            return folderRes.json().then(e=> Promise.reject(e))
-          return folderRes.json()
+        alert(`The folder name has been changed to ${folder.name}`)
+          this.props.history.goBack()
+          
       })
       .then((folderRes1)=>{
           
-          alert(`A new folder has been added`)
-          this.props.history.goBack()
+          
       })
       .catch(e =>{
           console.error({e});
@@ -72,14 +76,13 @@ export default class AddFolder extends React.Component{
     }
   }
 
-  
   render (){
     const nameError = this.validateName()
 
     return(
       <div className = 'AddFolder'>
         <h2 className = 'AddFolder__title'>
-          Enter the name of your new folder.
+          Enter the name of your updated folder.
         </h2>
         <form className="addFolder-form" onSubmit={this.handleSubmit}>
           <div className="form-group">
@@ -106,5 +109,6 @@ export default class AddFolder extends React.Component{
       </div>
   )
   }
-    
+
+
 }

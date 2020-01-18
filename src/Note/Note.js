@@ -21,14 +21,16 @@ export default class Note extends React.Component {
   static contextType = ApiContext;
 
   handleClickDelete = e => {
+    
     e.preventDefault()
+    
     const noteId = this.props.id
-
+    
     fetch(`${config.API_ENDPOINT}/notes/${noteId}`, {
       method: 'DELETE',
       headers: {
         'content-type': 'application/json'
-      },
+      }
     })
       .then(res => {
         if (!res.ok)
@@ -39,19 +41,20 @@ export default class Note extends React.Component {
         this.context.deleteNote(noteId)
         // allow parent to perform extra behaviour
         this.props.onDeleteNote(noteId)
-        
+        document.location.reload(true)
       })
       .catch(error => {
         console.error({ error })
       })
       
-      document.location.reload(true)
+      
   }
 
   render() {
     const { name, id, modified } = this.props
-    
+    //console.log('name id', name, id, modified)
     return (
+
       <div className='Note'>
         <h2 className='Note__title'>
           <Link to={`/note/${id}`}>
@@ -72,7 +75,7 @@ export default class Note extends React.Component {
           className='Note__delete'
           type='button'
         >
-          <FontAwesomeIcon icon='edit-alt' />
+          <FontAwesomeIcon icon='edit' />
           {' '}
           edit
         </button>

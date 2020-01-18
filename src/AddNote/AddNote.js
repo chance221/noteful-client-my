@@ -91,7 +91,7 @@ export default class AddNote extends React.Component{
   }
 
   updateServerNotes = note =>{
-    console.log(note)
+    console.log('note being added', note)
     const folderInt = parseInt(note.folderId, 10)
     fetch(`${config.API_ENDPOINT}/notes`, {
         method:'post',
@@ -118,7 +118,6 @@ export default class AddNote extends React.Component{
     })
     .catch(e =>{
       alert('something went wrong')
-      console.log({e})  
       console.error({e});
     })
   };
@@ -184,7 +183,6 @@ export default class AddNote extends React.Component{
 
     const folderError = this.validatefolderId();
     
-    console.log('context and folders', this.context, folders)
     return(
       
       <div className = 'AddNote'>

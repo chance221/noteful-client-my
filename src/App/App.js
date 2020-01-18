@@ -9,6 +9,7 @@ import ApiContext from '../ApiContext';
 import AddFolder from '../AddFolder/AddFolder';
 import AddNote from '../AddNote/AddNote';
 import UpdateNote from '../UpdateNote/UpdateNote';
+import UpdateFolder from '../UpdateFolder/UpdateFolder';
 import ErrorBoundry from '../ErrorBoundaries/ErrorBoundries';
 import config from '../config';
 import './App.css';
@@ -22,6 +23,7 @@ class App extends Component {
         folders: []
     };
 
+    
     componentDidMount() {
         Promise.all([
             fetch(`${config.API_ENDPOINT}/notes`),
@@ -66,38 +68,40 @@ class App extends Component {
             });
     }
 
-    updateFolder(updatedFolder){
-        const {id} = updatedFolder
-        
-        Promise(
-            fetch(`${config.API_ENDPOINT}/folders/${id}`, {
-                method: 'patch',
-                body: JSON.stringify(updatedFolder)
-            }).then(response =>{
-                if(!response.ok){
-                    return response.json().then(e => Promise.reject(e));
-                }
-                return Promise(response);
-            }).then(updatedFldr => {
-                console.log('updated folder:', updatedFldr)
-            })    
-        )
+    updateFolder = (updatedFolder) =>{
+        console.log('updated folder', updatedFolder)
+        let folders = this.state.folders.filter(folder => {
+            console.log(folders)
+            return folder.id != updatedFolder.id
+        })
+
+        folders.push(updatedFolder)
+
+        this.setState({
+            folders: folders
+        })
     }
 
-    updateNote(){
-        return console.log("Note updating")
-        //this is where you would make the api call to update the note but this can take place in the update note component
+    updateNote = (newNote) => {
+       
+       let notes = this.state.notes.filter(note =>{
+           return note.id != newNote.id
+       })
+
+       notes.push(newNote)
+
+       this.setState({
+           notes:notes
+       })
+
     }
 
     addFolder = (folderName) => {
         let newFolder = {
             name: ''
-            //id:''
         };
         
         newFolder.name= folderName;
-        //newFolder.id = shortid.generate();
-        console.log(newFolder)
         return newFolder
     }
 
@@ -106,19 +110,39 @@ class App extends Component {
         this.setState({
             folders:[...this.state.folders, folder]
         })
+
+        this.forceUpdate();
     }
 
     handleNoteSubmit = (note) =>{
         this.setState({
             notes:[...this.state.notes, note]
         })
+
+        
     }
 
     handleDeleteNote = noteId => {
         this.setState({
-            notes: this.state.notes.filter(note => note.id !== noteId)
+            notes: this.state.notes.filter(note => note.id != noteId)
         });
+
+        this.setState({state: this.state})
+        
     };
+
+    handelDeleteFolder = folderId => {
+        this.setState({
+            folders: this.state.folders.filter(folder => folder.id != folderId)
+        })
+
+    }
+
+    updateComponent = () => {
+        this.forceUpdate();
+    }
+
+
 
     renderNavRoutes() {
         return (
@@ -133,6 +157,7 @@ class App extends Component {
                 ))}
                 <Route path="/note/:noteId" component={NotePageNav} />
                 <Route path="/add-folder" component={AddFolder} />
+                <Route path="/update-folder/:folderId" component = {UpdateFolder}/>
             </>
         );
     }
@@ -166,7 +191,8 @@ class App extends Component {
             handleFolderSubmit: this.handleFolderSubmit,
             addFolder: this.addFolder,
             updateFolder: this.updateFolder,
-            updateNotes: this.updateNote 
+            updateNote: this.updateNote,
+            updateComponent: this.updateComponent 
         };
         
         return (
