@@ -31,13 +31,11 @@ export default class AddFolder extends React.Component{
   handleSubmit = (e) => {
       e.preventDefault();
       const name = this.state.name.value;
-      const { addFolder, handleFolderSubmit } = this.context;
-      const newFolder = addFolder(name);
-      handleFolderSubmit(newFolder)
-      this.updateServerFolders(newFolder);
+      
+      this.updateServerFolders(name);
   }
 
-  updateServerFolders = folder =>{
+  updateServerFolders = name =>{
       
       fetch(`${config.API_ENDPOINT}/folders`, {
           method:'post',
@@ -45,7 +43,7 @@ export default class AddFolder extends React.Component{
               'content-type':'application/json',
           },
           body: JSON.stringify({
-            name: folder.name
+            name
           })
       })
       .then((folderRes)=>{
@@ -55,7 +53,11 @@ export default class AddFolder extends React.Component{
           return folderRes.json()
       })
       .then((folderRes1)=>{
-          
+        //addFolder(folderRes1);
+        console.log(folderRes1)
+      const { handleFolderSubmit } = this.context;
+        
+        handleFolderSubmit(folderRes1[0])
           alert(`A new folder has been added`)
           this.props.history.goBack()
       })

@@ -91,7 +91,7 @@ export default class AddNote extends React.Component{
   }
 
   updateServerNotes = note =>{
-    console.log('note being added', note)
+
     const folderInt = parseInt(note.folderId, 10)
     fetch(`${config.API_ENDPOINT}/notes`, {
         method:'post',
@@ -113,8 +113,9 @@ export default class AddNote extends React.Component{
         return folderRes.json()
     })
     .then((folderRes1)=>{
-        
-        this.props.history.goBack()
+      console.log(folderRes1)
+      this.context.handleNoteSubmit(folderRes1[0])
+      this.props.history.goBack()
     })
     .catch(e =>{
       alert('something went wrong')
@@ -150,7 +151,7 @@ export default class AddNote extends React.Component{
     e.preventDefault();
     
     const promise1 = new Promise((resolve, reject) =>{
-    //let modDate = this.getDateModified();
+    let modDate = this.getDateModified();
     //let addedID = this.addID();
     let newName = this.state.noteName.value;
     let newContent = this.state.noteContent.value;
@@ -160,7 +161,8 @@ export default class AddNote extends React.Component{
       wholeNote: ({ 
         name:newName,
         folderId:parseInt(folderId, 10), 
-        content:newContent
+        content:newContent,
+        modified: modDate
         })
     })
     resolve();
@@ -169,8 +171,9 @@ export default class AddNote extends React.Component{
       alert('note created')
       
       this.updateServerNotes(this.state.wholeNote)
-      this.context.handleNoteSubmit(this.state.wholeNote)
-    }) 
+      
+    })
+    promise1.then() 
   };
 
   render(){

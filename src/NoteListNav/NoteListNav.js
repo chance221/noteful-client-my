@@ -27,18 +27,14 @@ export default class NoteListNav extends React.Component {
 
   handleClickDelete1 = (folderId) => {
     
-    
     console.log("this is the folder being deleted" , folderId)
 
     fetch(`${config.API_ENDPOINT}/folders/${folderId}`, {
-      method: 'DELETE',
-      headers: {
-        'content-type': 'application/json'
-      }
+      method: 'DELETE'
     })
       .then(res => {
         console.log(res)
-        return res.json()
+        
       })
       .then(() => {
         this.context.handleDeleteFolder(folderId)
@@ -85,6 +81,7 @@ export default class NoteListNav extends React.Component {
                 <button
                   className='Note__delete'
                   type='button'
+                  key={folder.id}
                 >
                 <FontAwesomeIcon icon='edit' />
                   {' '}

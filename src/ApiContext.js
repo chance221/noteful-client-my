@@ -9,6 +9,7 @@ export default React.createContext({
   deleteFolder: () => {},
   handleNoteSubmit:() => {},
   handleFolderSubmit:() => {},
+  handleDeleteFolder:() => {},
   addFolderName: "",
   addNoteName:"",
   updateFolder: () =>{},

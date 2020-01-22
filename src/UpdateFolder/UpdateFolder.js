@@ -3,6 +3,7 @@ import config from '../config';
 import ApiContext from '../ApiContext';
 import ValidationError from '../ValidationError';
 import '../UpdateFolder/UpdateFolder.css';
+import {findFolder} from '../notes-helpers'
 
 
 
@@ -35,14 +36,23 @@ export default class UpdateFolder extends React.Component{
   handleSubmit = (e) => {
       e.preventDefault();
       const name = this.state.name.value;
-      const { updateFolder, addFolder } = this.context;
-      const newFolder = addFolder(name);
-      newFolder.id = this.props.match.params.folderId;
-      updateFolder(newFolder)
+      
+      const newFolder = {
+        name: name,
+        id: this.props.match.params.folderId
+      };
+      
       this.updateServerFolders(newFolder);
   }
 
+  getFolder = () => {
+  
+    console.log(findFolder(this.props.match.params.folderId))
+  
+  }
+
   updateServerFolders = folder =>{
+    
     console.log('this is the folder when updating database', folder)
       let folderId = parseInt(folder.id, 10) 
       fetch(`${config.API_ENDPOINT}/folders/${folderId}`, {
@@ -55,12 +65,12 @@ export default class UpdateFolder extends React.Component{
           })
       })
       .then((folderRes)=>{
+        console.log('this is the server response', folderRes)
+        this.context.updateFolder(folder) 
         alert(`The folder name has been changed to ${folder.name}`)
-          this.props.history.goBack()
-          
       })
       .then((folderRes1)=>{
-          
+          this.props.history.goBack()
           
       })
       .catch(e =>{
@@ -92,6 +102,7 @@ export default class UpdateFolder extends React.Component{
               className='form_input' 
               name='name' 
               id='name'
+
               onChange={e=>this.updateName(e.target.value)}
             />
             {this.state.name.touched && <ValidationError message={nameError}/>}

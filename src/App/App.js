@@ -69,9 +69,9 @@ class App extends Component {
     }
 
     updateFolder = (updatedFolder) =>{
-        console.log('updated folder', updatedFolder)
+        
         let folders = this.state.folders.filter(folder => {
-            console.log(folders)
+            
             return folder.id != updatedFolder.id
         })
 
@@ -96,14 +96,11 @@ class App extends Component {
 
     }
 
-    addFolder = (folderName) => {
-        let newFolder = {
-            name: ''
-        };
+    // addFolder = (folderName) => {
         
-        newFolder.name= folderName;
-        return newFolder
-    }
+    //     newFolder.name= folderName;
+    //     return newFolder
+    // }
 
     // ***Still need to this. API call may happen in the new folder component***
     handleFolderSubmit = (folder) =>{
@@ -118,8 +115,6 @@ class App extends Component {
         this.setState({
             notes:[...this.state.notes, note]
         })
-
-        
     }
 
     handleDeleteNote = noteId => {
@@ -127,15 +122,16 @@ class App extends Component {
             notes: this.state.notes.filter(note => note.id != noteId)
         });
 
-        this.setState({state: this.state})
+        this.forceUpdate();
         
     };
 
-    handelDeleteFolder = folderId => {
+    handleDeleteFolder = folderId => {
         this.setState({
-            folders: this.state.folders.filter(folder => folder.id != folderId)
+            folders: this.state.folders.filter(folder => folder.id != folderId),
+            notes: this.state.notes.filter(notes=> notes.folderId != folderId)
         })
-
+        
     }
 
     updateComponent = () => {
@@ -189,6 +185,7 @@ class App extends Component {
             deleteNote: this.handleDeleteNote,
             handleNoteSubmit: this.handleNoteSubmit,
             handleFolderSubmit: this.handleFolderSubmit,
+            handleDeleteFolder: this.handleDeleteFolder,
             addFolder: this.addFolder,
             updateFolder: this.updateFolder,
             updateNote: this.updateNote,
